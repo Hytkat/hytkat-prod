@@ -11,7 +11,9 @@ const base = releases.length
       ).flat()
     : [];
 const loop = [...base, ...base];
-const art = "/elements/KALYANIpng.png";
+// Works both locally and on GitHub Pages under /hytkat-prod/
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+const art = `${BASE}/elements/KALYANIpng.png`;
 const sp = "https://open.spotify.com/search/Hytkat";
 const yt = "https://www.youtube.com/@Hytkat";
 const grads = [
@@ -385,7 +387,7 @@ const note = (r: any) =>
                         aud = null;
                     }
                     disc.classList.remove("spin");
-                    pp.textContent = "\u25B6";
+                    pp.textContent = "▶";
                     fill.style.width = "0";
                 }
                 function tick() {
@@ -405,7 +407,7 @@ const note = (r: any) =>
                 async function play() {
                     stop();
                     disc.classList.add("spin");
-                    pp.textContent = "\u275A\u275A";
+                    pp.textContent = "❚❚";
                     if (S[i].src) {
                         aud = new Audio(S[i].src);
                         aud.play().catch(stop);
@@ -536,7 +538,7 @@ const note = (r: any) =>
                     travel += Math.abs(dx);
                     pos -= dx;
                 });
-                window.addEventListener("pointerup", function () {
+                function release() {
                     if (!drag) return;
                     drag = false;
                     go(
@@ -544,7 +546,9 @@ const note = (r: any) =>
                         350,
                         performance.now(),
                     );
-                });
+                }
+                window.addEventListener("pointerup", release);
+                window.addEventListener("pointercancel", release);
                 rail.addEventListener(
                     "click",
                     function (e) {

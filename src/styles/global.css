@@ -943,3 +943,213 @@ h3 {
     padding: 16px 6px 6px;
     color: var(--c1);
 }
+
+/* ===== MOBILE / TOUCH ===== */
+html {
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+}
+
+@media (max-width: 860px) {
+    .sec {
+        padding: 72px 5vw;
+    }
+    .pl,
+    .pls {
+        padding: 24px 20px;
+    }
+}
+
+@media (max-width: 640px) {
+    /* nav: logo + section links, scroll sideways if still too narrow */
+    .nav {
+        gap: 14px;
+        padding: max(10px, env(safe-area-inset-top))
+            max(5vw, env(safe-area-inset-right)) 10px
+            max(5vw, env(safe-area-inset-left));
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .nav::-webkit-scrollbar {
+        display: none;
+    }
+    .nav .logo {
+        flex: none;
+        margin-right: auto;
+        font-size: 14px;
+    }
+    .nav a:not(.logo):not(.pill) {
+        display: inline-block;
+        flex: none;
+        font-size: 10.5px;
+        white-space: nowrap;
+    }
+    .nav .pill {
+        display: none; /* Spotify button is already in the hero */
+    }
+
+    /* hero */
+    .hero {
+        min-height: 0;
+        align-content: start;
+        padding: 84px 5vw 56px;
+    }
+    .tag {
+        margin-bottom: 14px;
+        font-size: 11px;
+    }
+    .mega {
+        font-size: 13vw;
+        white-space: nowrap;
+        margin-bottom: 18px;
+    }
+    .mega span:nth-child(even) {
+        -webkit-text-stroke: 2px var(--ink);
+    }
+    .hero p.lead {
+        font-size: 15px;
+        margin-bottom: 18px;
+    }
+    .spinbadge {
+        width: 76px;
+        right: 4vw;
+        bottom: 18px;
+    }
+    .pill {
+        padding: 13px 22px;
+    }
+
+    /* strips + sections */
+    .strips {
+        padding: 12px 0;
+    }
+    .strip {
+        font-size: 22px;
+    }
+    .sh {
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        margin-bottom: 28px;
+    }
+    .sec {
+        padding: 44px 5vw;
+    }
+    .sec h2 {
+        font-size: clamp(24px, 8vw, 40px);
+    }
+    .o {
+        -webkit-text-stroke-width: 1.5px;
+    }
+
+    /* releases rail */
+    .rail {
+        padding: 48px 0;
+    }
+    .rail-wrap::before {
+        height: 80%;
+    }
+
+    /* work rows */
+    .row {
+        grid-template-columns: 30px 1fr 52px;
+        gap: 12px;
+        padding: 18px 4px;
+    }
+    .row h3 {
+        font-size: clamp(15px, 4.6vw, 20px);
+    }
+    .row .th {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* snippet player */
+    .pl,
+    .pls {
+        padding: 22px 16px;
+    }
+    .deck {
+        width: min(280px, 100%);
+        padding: 14px;
+    }
+    .ctl {
+        gap: 18px;
+    }
+    .ctl button {
+        min-width: 48px;
+        min-height: 48px;
+    }
+    .tl li {
+        padding: 12px 4px;
+        font-size: 15px;
+    }
+
+    /* video player */
+    .vmain {
+        padding: 12px;
+    }
+    .vscreen button {
+        font-size: 44px;
+    }
+    #vtitle {
+        font-size: 15px;
+    }
+    .vlist {
+        max-height: 340px;
+        padding: 10px;
+    }
+    .vlist li {
+        grid-template-columns: 104px 1fr;
+        gap: 10px;
+    }
+
+    /* footer */
+    .foot {
+        padding: 44px 5vw 16px;
+    }
+    .megafoot {
+        font-size: 13vw;
+        white-space: nowrap;
+    }
+    .links {
+        gap: 12px 18px;
+    }
+
+    /* lighter on phone GPUs */
+    .grain {
+        animation: none;
+        inset: 0;
+    }
+    .glass,
+    .nav {
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+    }
+}
+
+/* touch devices: stop hover styles from sticking after a tap */
+@media (hover: none) {
+    .row:hover {
+        background: none;
+        color: inherit;
+        padding-left: 8px;
+    }
+    .row:hover .th {
+        transform: none;
+    }
+    .row:hover .idx {
+        color: var(--c1);
+    }
+    .tl li:hover {
+        padding-left: 4px;
+        opacity: 0.4;
+    }
+    .tl li.on:hover {
+        padding-left: 14px;
+        opacity: 1;
+    }
+    .megafoot:hover {
+        color: var(--bg);
+        -webkit-text-stroke-color: rgba(244, 237, 226, 0.3);
+    }
+}
