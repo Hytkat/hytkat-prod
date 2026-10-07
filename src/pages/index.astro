@@ -1,0 +1,729 @@
+---
+import "../styles/global.css";
+import { getReleases } from "../lib/spotify";
+import { SNIPS, WORK, VIDEO_LINKS, NOTES } from "../data";
+
+const releases = await getReleases().catch(() => []);
+const base = releases.length
+    ? Array.from(
+          { length: Math.max(2, Math.ceil(12 / releases.length)) },
+          () => releases,
+      ).flat()
+    : [];
+const loop = [...base, ...base];
+const art = "/elements/KALYANIpng.png";
+const sp = "https://open.spotify.com/search/Hytkat";
+const yt = "https://www.youtube.com/@Hytkat";
+const grads = [
+    "#ff2d1a,#3a0505",
+    "#7a0c05,#ff7a45",
+    "#ff7a45,#1a0404",
+    "#c01818,#0a0202",
+];
+const ticker = "HYTKAT ✦ BEATS ✦ LOOPS ✦ PRODUCER ✦ NEW DROPS ✦ ";
+const vid = (u: string) =>
+    u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/)?.[1];
+const videos = (
+    await Promise.all(
+        VIDEO_LINKS.map(async (u) => {
+            const id = vid(u);
+            if (!id) return null;
+            try {
+                const x = await fetch(
+                    `https://www.youtube.com/oembed?url=${encodeURIComponent(u)}&format=json`,
+                ).then((r) => r.json());
+                return { id, title: x.title as string };
+            } catch {
+                return { id, title: "Watch on YouTube" };
+            }
+        }),
+    )
+).filter(Boolean) as { id: string; title: string }[];
+const note = (r: any) =>
+    NOTES?.[r.name.toLowerCase()] ??
+    (r.by ? `By ${r.by}.` : `${r.type} by Hytkat.`);
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <title>Hytkat | Music Producer</title>
+        <meta
+            name="description"
+            content="Music producer. Beats, loops and late-night experiments."
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;800&family=Space+Grotesk:wght@400;500&family=Space+Mono&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div class="grain" aria-hidden="true"></div>
+        <div class="cur" id="cur" aria-hidden="true"></div>
+
+        <header class="hero" id="top">
+            <div class="floor" aria-hidden="true"></div>
+            <nav class="nav">
+                <a class="logo" href="#top">
+                    HYTKAT
+                </a>
+                <a href="#releases">Releases</a>
+                <a href="#work">Work</a>
+                <a href="#listen">Snippets</a>
+                <a href="#videos">Videos</a>
+                <a class="pill" href={sp} target="_blank" rel="noopener">
+                    Listen
+                </a>
+            </nav>
+            <div class="hero-c">
+                <div class="tag mono">[ music producer / beatmaker ]</div>
+                <h1 class="mega" id="mega">
+                    <span style="--i:0">H</span>
+                    <span style="--i:1">Y</span>
+                    <span style="--i:2">T</span>
+                    <span style="--i:3">K</span>
+                    <span style="--i:4">A</span>
+                    <span style="--i:5">T</span>
+                </h1>
+                <p class="lead">
+                    Beats, loops and late-night experiments. Press play on the
+                    latest drop.
+                </p>
+                <a class="pill" href={sp} target="_blank" rel="noopener">
+                    Spotify
+                </a>
+                <a class="pill alt" href={yt} target="_blank" rel="noopener">
+                    YouTube
+                </a>
+            </div>
+            <div class="spinbadge" aria-hidden="true">
+                <svg class="rtext" viewBox="0 0 200 200">
+                    <defs>
+                        <path
+                            id="cp"
+                            d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"
+                        />
+                    </defs>
+                    <text>
+                        <textPath
+                            href="#cp"
+                            textLength="500"
+                            lengthAdjust="spacing"
+                        >
+                            PRODUCER ✦ BEATS ✦ LOOPS ✦ HYTKAT ✦{" "}
+                        </textPath>
+                    </text>
+                </svg>
+                <div
+                    class="vin"
+                    style={art ? `background-image:url(${art})` : ""}
+                ></div>
+            </div>
+        </header>
+
+        <div class="strips" aria-hidden="true">
+            <div class="strip s1">
+                <div>
+                    <span>{ticker.repeat(4)}</span>
+                    <span>{ticker.repeat(4)}</span>
+                </div>
+            </div>
+            <div class="strip s2">
+                <div>
+                    <span>{ticker.repeat(4)}</span>
+                    <span>{ticker.repeat(4)}</span>
+                </div>
+            </div>
+        </div>
+
+        <section class="sec" id="releases">
+            <div class="sh rv">
+                <span class="idx mono">01</span>
+                <h2>
+                    Latest <span class="o">releases</span>
+                </h2>
+            </div>
+            {releases.length === 0 ? (
+                <div class="glass card">
+                    <small>
+                        No releases loaded. Add Spotify keys in .env and
+                        rebuild.
+                    </small>
+                </div>
+            ) : (
+                <div class="rail-wrap rv">
+                    <div class="rail">
+                        <div class="track">
+                            {loop.map((r, i) => (
+                                <a
+                                    class="glass card"
+                                    href={r.url}
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    <div
+                                        class="cover"
+                                        style={`background:linear-gradient(135deg,${grads[i % grads.length]})`}
+                                    >
+                                        {r.cover && (
+                                            <img
+                                                src={r.cover}
+                                                alt={`${r.name} cover`}
+                                                loading="lazy"
+                                            />
+                                        )}
+                                    </div>
+                                    <h3>{r.name}</h3>
+                                    <small>
+                                        {r.by ? `${r.by} · ` : ""}
+                                        {r.type}
+                                        {r.year ? `, ${r.year}` : ""}
+                                    </small>
+                                    <p class="desc">{note(r)}</p>
+                                    <span class="go mono">
+                                        Listen on Spotify &#8599;
+                                    </span>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </section>
+
+        <section class="sec" id="work">
+            <div class="sh rv">
+                <span class="idx mono">02</span>
+                <h2>
+                    Previous <span class="o">work</span>
+                </h2>
+            </div>
+            <div class="rv">
+                {WORK.map((w, i) => (
+                    <div class="row">
+                        <span class="idx mono">0{i + 1}</span>
+                        <div>
+                            <h3>{w.name}</h3>
+                            <small>{w.blurb}</small>
+                        </div>
+                        <div class="th">
+                            {w.img ? <img src={w.img} alt={w.name} /> : w.tag}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+
+        <section class="sec" id="listen">
+            <div class="sh rv">
+                <span class="idx mono">03</span>
+                <h2>
+                    Unreleased <span class="o">snippets</span>
+                </h2>
+            </div>
+            <div class="pbox rv" style={art ? `--art:url(${art})` : ""}>
+                <div class="pl">
+                    <div class="deck">
+                        <div
+                            id="disc"
+                            style={art ? `background-image:url(${art})` : ""}
+                        ></div>
+                        <div class="arm"></div>
+                    </div>
+                    <h3 id="ttl">{SNIPS[0]?.title}</h3>
+                    <div class="bar">
+                        <i id="fill"></i>
+                    </div>
+                    <div class="ctl">
+                        <button id="prev" aria-label="Previous">
+                            &#9664;&#9664;
+                        </button>
+                        <button id="pp" aria-label="Play or pause">
+                            &#9654;
+                        </button>
+                        <button id="next" aria-label="Next">
+                            &#9654;&#9654;
+                        </button>
+                    </div>
+                </div>
+                <div class="pls">
+                    <div class="plh mono">
+                        <span>Playlist</span>
+                        <span>{SNIPS.length} tracks</span>
+                    </div>
+                    <ul class="tl">
+                        {SNIPS.map((s, i) => (
+                            <li class={i === 0 ? "on" : ""}>{s.title}</li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+            <script
+                type="application/json"
+                id="sn"
+                set:html={JSON.stringify(SNIPS)}
+            ></script>
+        </section>
+
+        <section class="sec" id="videos">
+            <div class="sh rv">
+                <span class="idx mono">04</span>
+                <h2>
+                    On <span class="o">youtube</span>
+                </h2>
+            </div>
+            {videos.length > 0 ? (
+                <div class="vbox rv">
+                    <div class="vmain">
+                        <div
+                            class="vscreen"
+                            id="vscreen"
+                            style={`background-image:url(https://i.ytimg.com/vi/${videos[0].id}/hqdefault.jpg)`}
+                        >
+                            <button id="vplay" aria-label="Play video">
+                                &#9654;
+                            </button>
+                        </div>
+                        <h3 id="vtitle">{videos[0].title}</h3>
+                    </div>
+                    <ul class="vlist" id="vlist">
+                        {videos.map((v, i) => (
+                            <li class={i === 0 ? "on" : ""}>
+                                <img
+                                    src={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`}
+                                    alt=""
+                                    loading="lazy"
+                                />
+                                <span>{v.title}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <script
+                        type="application/json"
+                        id="vd"
+                        set:html={JSON.stringify(videos)}
+                    ></script>
+                </div>
+            ) : (
+                <a
+                    class="glass vcard"
+                    data-tilt
+                    style="max-width:420px;margin-bottom:34px"
+                    href={yt}
+                    target="_blank"
+                    rel="noopener"
+                >
+                    <div class="vthumb">
+                        <span>&#9654;</span>
+                    </div>
+                    <h3>Watch Hytkat on YouTube</h3>
+                </a>
+            )}
+            <a class="pill" href={yt} target="_blank" rel="noopener">
+                Subscribe
+            </a>
+        </section>
+
+        <footer class="foot">
+            <div class="megafoot" aria-hidden="true">
+                HYTKAT
+            </div>
+            <div class="links mono">
+                <a href={sp} target="_blank" rel="noopener">
+                    Spotify
+                </a>
+                <a href={yt} target="_blank" rel="noopener">
+                    YouTube
+                </a>
+                <a href="#releases">Releases</a>
+                <a href="#work">Work</a>
+                <a href="#top">Back to top &#8593;</a>
+            </div>
+            <div class="copy mono">
+                &copy; {new Date().getFullYear()} Hytkat
+            </div>
+        </footer>
+
+        <script is:inline>
+            (function () {
+                var S = JSON.parse(document.getElementById("sn").textContent);
+                var L = [].slice.call(document.querySelectorAll(".tl li"));
+                var disc = document.getElementById("disc"),
+                    ttl = document.getElementById("ttl"),
+                    fill = document.getElementById("fill"),
+                    pp = document.getElementById("pp");
+                var i = 0,
+                    ac,
+                    aud,
+                    nodes = [],
+                    t0 = 0,
+                    DUR = 8,
+                    raf;
+                function sel(n) {
+                    i = (n + S.length) % S.length;
+                    L.forEach(function (l, k) {
+                        l.classList.toggle("on", k === i);
+                    });
+                    ttl.textContent = S[i].title;
+                }
+                function stop() {
+                    cancelAnimationFrame(raf);
+                    nodes.forEach(function (o) {
+                        try {
+                            o.stop();
+                        } catch (e) {}
+                    });
+                    nodes = [];
+                    if (aud) {
+                        aud.pause();
+                        aud = null;
+                    }
+                    disc.classList.remove("spin");
+                    pp.textContent = "\u25B6";
+                    fill.style.width = "0";
+                }
+                function tick() {
+                    var p = aud
+                        ? aud.duration
+                            ? aud.currentTime / aud.duration
+                            : 0
+                        : (ac.currentTime - t0) / DUR;
+                    fill.style.width = Math.min(p * 100, 100) + "%";
+                    if (p >= 1) {
+                        sel(i + 1);
+                        play();
+                        return;
+                    }
+                    raf = requestAnimationFrame(tick);
+                }
+                async function play() {
+                    stop();
+                    disc.classList.add("spin");
+                    pp.textContent = "\u275A\u275A";
+                    if (S[i].src) {
+                        aud = new Audio(S[i].src);
+                        aud.play().catch(stop);
+                    } else {
+                        ac =
+                            ac ||
+                            new (
+                                window.AudioContext || window.webkitAudioContext
+                            )();
+                        await ac.resume();
+                        t0 = ac.currentTime;
+                        var notes = [
+                                [0, 4, 7, 12],
+                                [0, 3, 7, 10],
+                                [0, 5, 9, 12],
+                            ][i % 3],
+                            base = 220 * Math.pow(2, i / 12);
+                        for (var k = 0; k < DUR * 4; k++) {
+                            var o = ac.createOscillator(),
+                                g = ac.createGain(),
+                                st = t0 + k * 0.25;
+                            o.frequency.value =
+                                base * Math.pow(2, notes[k % 4] / 12);
+                            g.gain.setValueAtTime(0, st);
+                            g.gain.linearRampToValueAtTime(0.12, st + 0.02);
+                            g.gain.exponentialRampToValueAtTime(
+                                0.001,
+                                st + 0.24,
+                            );
+                            o.connect(g);
+                            g.connect(ac.destination);
+                            o.start(st);
+                            o.stop(st + 0.25);
+                            nodes.push(o);
+                        }
+                    }
+                    tick();
+                }
+                var playing = function () {
+                    return disc.classList.contains("spin");
+                };
+                pp.onclick = function () {
+                    playing() ? stop() : play();
+                };
+                document.getElementById("next").onclick = function () {
+                    var w = playing();
+                    sel(i + 1);
+                    w ? play() : stop();
+                };
+                document.getElementById("prev").onclick = function () {
+                    var w = playing();
+                    sel(i - 1);
+                    w ? play() : stop();
+                };
+                L.forEach(function (l, k) {
+                    l.onclick = function () {
+                        sel(k);
+                        play();
+                    };
+                });
+            })();
+        </script>
+        <script is:inline>
+            (function () {
+                var rail = document.querySelector(".rail");
+                if (!rail) return;
+                var track = rail.querySelector(".track");
+                var cards = [].slice.call(track.children);
+                var n = cards.length,
+                    GAP = 18,
+                    HOLD = 1000,
+                    MOVE = 800;
+                var cw,
+                    step,
+                    half,
+                    c0,
+                    pos = 0;
+                var still = matchMedia(
+                    "(prefers-reduced-motion: reduce)",
+                ).matches;
+                function layout() {
+                    var kk = step ? (pos - c0) / step : 0;
+                    cw =
+                        rail.clientWidth < 700
+                            ? rail.clientWidth * 0.72
+                            : (rail.clientWidth - 2 * GAP) / 3;
+                    cards.forEach(function (el) {
+                        el.style.width = cw + "px";
+                    });
+                    step = cw + GAP;
+                    half = (n / 2) * step;
+                    c0 = cards[0].offsetLeft + cw / 2;
+                    pos = c0 + kk * step;
+                }
+                layout();
+                window.addEventListener("resize", layout);
+                var from = 0,
+                    to = 0,
+                    t0 = 0,
+                    dur = MOVE,
+                    moving = false,
+                    nextAt = performance.now() + HOLD;
+                var drag = false,
+                    travel = 0,
+                    lastX = 0;
+                function ease(t) {
+                    return t < 0.5
+                        ? 4 * t * t * t
+                        : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                }
+                function go(target, d, now) {
+                    from = pos;
+                    to = target;
+                    t0 = now;
+                    dur = d;
+                    moving = true;
+                }
+                rail.addEventListener("pointerdown", function (e) {
+                    drag = true;
+                    travel = 0;
+                    lastX = e.clientX;
+                    moving = false;
+                });
+                window.addEventListener("pointermove", function (e) {
+                    if (!drag) return;
+                    var dx = e.clientX - lastX;
+                    lastX = e.clientX;
+                    travel += Math.abs(dx);
+                    pos -= dx;
+                });
+                window.addEventListener("pointerup", function () {
+                    if (!drag) return;
+                    drag = false;
+                    go(
+                        c0 + Math.round((pos - c0) / step) * step,
+                        350,
+                        performance.now(),
+                    );
+                });
+                rail.addEventListener(
+                    "click",
+                    function (e) {
+                        if (travel > 4) {
+                            e.preventDefault();
+                            travel = 0;
+                        }
+                    },
+                    true,
+                );
+                function frame(now) {
+                    if (!drag) {
+                        if (moving) {
+                            var p = Math.min((now - t0) / dur, 1);
+                            pos = from + (to - from) * ease(p);
+                            if (p >= 1) {
+                                moving = false;
+                                nextAt = now + HOLD;
+                            }
+                        } else if (!still && now >= nextAt)
+                            go(pos + step, MOVE, now);
+                    }
+                    var r =
+                        c0 + half * 0.5 + ((((pos - c0) % half) + half) % half);
+                    track.style.transform =
+                        "translateX(" + (rail.clientWidth / 2 - r) + "px)";
+                    cards.forEach(function (el) {
+                        var a = Math.min(
+                            Math.abs(el.offsetLeft + cw / 2 - r) / step,
+                            2,
+                        );
+                        el.style.transform = "scale(" + (1.08 - 0.14 * a) + ")";
+                        el.style.opacity = Math.max(1 - 0.4 * a, 0.2);
+                        el.style.filter = "blur(" + a * 1.2 + "px)";
+                        el.style.zIndex = 100 - Math.round(a * 10);
+                    });
+                    requestAnimationFrame(frame);
+                }
+                requestAnimationFrame(frame);
+            })();
+        </script>
+        <script is:inline>
+            (function () {
+                var io = new IntersectionObserver(
+                    function (es) {
+                        es.forEach(function (e) {
+                            if (e.isIntersecting) {
+                                e.target.classList.add("in");
+                                io.unobserve(e.target);
+                            }
+                        });
+                    },
+                    { threshold: 0.12 },
+                );
+                document.querySelectorAll(".rv").forEach(function (el) {
+                    io.observe(el);
+                });
+
+                var fine = matchMedia("(pointer:fine)").matches;
+                var still = matchMedia(
+                    "(prefers-reduced-motion: reduce)",
+                ).matches;
+                if (!fine || still) return;
+
+                var cur = document.getElementById("cur"),
+                    x = 0,
+                    y = 0,
+                    cx = 0,
+                    cy = 0;
+                addEventListener("pointermove", function (e) {
+                    x = e.clientX;
+                    y = e.clientY;
+                });
+                (function f() {
+                    cx += (x - cx) * 0.18;
+                    cy += (y - cy) * 0.18;
+                    cur.style.transform =
+                        "translate(" + cx + "px," + cy + "px)";
+                    requestAnimationFrame(f);
+                })();
+                document
+                    .querySelectorAll("a,button,.row,.tl li")
+                    .forEach(function (el) {
+                        el.addEventListener("pointerenter", function () {
+                            cur.classList.add("big");
+                        });
+                        el.addEventListener("pointerleave", function () {
+                            cur.classList.remove("big");
+                        });
+                    });
+
+                document.querySelectorAll(".pill").forEach(function (b) {
+                    b.addEventListener("pointermove", function (e) {
+                        var r = b.getBoundingClientRect();
+                        b.style.transform =
+                            "translate(" +
+                            (e.clientX - r.left - r.width / 2) * 0.25 +
+                            "px," +
+                            (e.clientY - r.top - r.height / 2) * 0.35 +
+                            "px)";
+                    });
+                    b.addEventListener("pointerleave", function () {
+                        b.style.transform = "";
+                    });
+                });
+
+                document.querySelectorAll("[data-tilt]").forEach(function (c) {
+                    c.addEventListener("pointermove", function (e) {
+                        var r = c.getBoundingClientRect(),
+                            px = (e.clientX - r.left) / r.width - 0.5,
+                            py = (e.clientY - r.top) / r.height - 0.5;
+                        c.style.setProperty("--rx", -py * 10 + "deg");
+                        c.style.setProperty("--ry", px * 12 + "deg");
+                        c.style.setProperty("--mx", (px + 0.5) * 100 + "%");
+                        c.style.setProperty("--my", (py + 0.5) * 100 + "%");
+                    });
+                    c.addEventListener("pointerleave", function () {
+                        c.style.setProperty("--rx", "0deg");
+                        c.style.setProperty("--ry", "0deg");
+                    });
+                });
+
+                var mega = document.getElementById("mega"),
+                    badge = document.querySelector(".spinbadge");
+                addEventListener("pointermove", function (e) {
+                    var px = e.clientX / innerWidth - 0.5,
+                        py = e.clientY / innerHeight - 0.5;
+                    mega.style.transform =
+                        "translate(" + px * -24 + "px," + py * -16 + "px)";
+                    if (badge)
+                        badge.style.transform =
+                            "translate(" + px * 40 + "px," + py * 30 + "px)";
+                });
+            })();
+        </script>
+        <script is:inline>
+            (function () {
+                var el = document.getElementById("vd");
+                if (!el) return;
+                var V = JSON.parse(el.textContent),
+                    scr = document.getElementById("vscreen"),
+                    ttl = document.getElementById("vtitle"),
+                    L = [].slice.call(document.querySelectorAll("#vlist li")),
+                    i = 0;
+                function bind() {
+                    var b = document.getElementById("vplay");
+                    if (b)
+                        b.onclick = function () {
+                            show(i, true);
+                        };
+                }
+                function show(k, play) {
+                    i = k;
+                    L.forEach(function (l, n) {
+                        l.classList.toggle("on", n === k);
+                    });
+                    ttl.textContent = V[k].title;
+                    if (play) {
+                        scr.innerHTML =
+                            '<iframe src="https://www.youtube.com/embed/' +
+                            V[k].id +
+                            '?autoplay=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+                    } else {
+                        scr.style.backgroundImage =
+                            "url(https://i.ytimg.com/vi/" +
+                            V[k].id +
+                            "/hqdefault.jpg)";
+                        scr.innerHTML =
+                            '<button id="vplay" aria-label="Play video">&#9654;</button>';
+                        bind();
+                    }
+                }
+                L.forEach(function (l, n) {
+                    l.onclick = function () {
+                        show(n, true);
+                    };
+                });
+                bind();
+            })();
+        </script>
+    </body>
+</html>
